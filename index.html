@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/assets/style.css">
+    <script src="/assets/script.js"></script>
+    <title>test go server</title>
+  </head>
+  <body>
+    <h1>TEST GOLANG SERVER</h1>
+    <div class="btns">
+      <input type="button" id="btn1" class="btn_op" onclick="btn1()">
+      <input type="text" id="txt1" class="txt">
+      <input type="button" id="btn2" class="btn_filtr" text="Выполнить" onclick="callDatabase()">
+    </div>
+    <div id="div_tab"  class="table_div_vis">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Param_ID</th><th>Timestamp</th></tr> 
+    </thead>
+    <tbody>
+      {{  .Test }}
+    </tbody>
+  </table>
+    </div>
+  </body>
+</html>

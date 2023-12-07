@@ -1,0 +1,69 @@
+body {
+  background-color: rgb(183, 181, 181);
+} 
+table {
+  position: absolute;
+  top: 150px;
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #dddddd;
+}
+th {
+  font-weight: bold;
+  padding: 5px;
+  background: #9e9b9b;
+  border: 1px solid #dddddd;
+}
+td {
+  border: 1px solid #dddddd;
+  padding: 5px;
+}
+.table_div_vis {
+  display: flex;
+}
+.table_div_invis {
+  display: none;
+}
+.btn_op{
+  background-image: url(/img/otkr.jpg);
+  background-repeat: no-repeat;
+  position: absolute;
+    top: 90px;
+  width: 50px;
+  height: 50px;
+}
+.btn_close{
+  background-image: url(/img/zakr.jpeg);
+  position: absolute;
+    top: 90px;
+  background-repeat: no-repeat;
+  width: 50px;
+  height: 50px;
+}
+.btn_op{
+  background-image: url(/img/otkr.jpg);
+  background-repeat: no-repeat;
+  position: absolute;
+    top: 90px;
+    left: 90;;
+  width: 50px;
+  height: 50px;
+}
+.btn_filtr{
+  background-image: url(/img/otkr.jpg);
+  background-repeat: no-repeat;
+  position: absolute;
+    top: 90px;
+    left: 80px;
+  width: 50px;
+  height: 50px;
+}
+.txt{
+  position: absolute;
+  width: 200px;
+  height: 44px;
+    top: 90px;
+    left: 150px;
+    
+}
