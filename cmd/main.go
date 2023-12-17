@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"danilamukhin/serv_go/internal/api"
-	"danilamukhin/serv_go/pkg/server"
 	"errors"
 	"log"
 	"net/http"
@@ -11,16 +9,36 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"danilamukhin/serv_go/internal/api"
+	"danilamukhin/serv_go/internal/pgx"
+	"danilamukhin/serv_go/internal/service"
+	"danilamukhin/serv_go/pkg/server"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func main() {
-	a := api.InitApi()
+	ctx := context.Background()
+	//connecting to postgres
+	pgxConnURL := "postgresql://test:test@localhost:5432/postgres?&sslmode=disable"
+	pool, err := pgxpool.New(ctx, pgxConnURL)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	repo := pgx.New(pool)
+
+	srv := service.NewService(repo)
+
+	a := api.InitApi(srv)
 	httpServer := server.NewServer(a.InitRouter())
 	go func() {
 		if err := httpServer.Run(); !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalln(err)
 		}
 	}()
+
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
@@ -35,5 +53,4 @@ func main() {
 	if err := httpServer.Stop(ctx); err != nil {
 		log.Fatalln(err)
 	}
-
 }

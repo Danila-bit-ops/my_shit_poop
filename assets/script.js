@@ -6,17 +6,10 @@ function btn1() {
   tab.classList.toggle('table_div_vis')
   tab.classList.toggle('table_div_invis')
   }
+function openForm() {
+  document.getElementById("myForm").style.display = "block";
+}
 
-  function callDatabase() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:3000", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            console.log("good")
-        }
-    };
-
-    xhr.send("action=database()");
+function closeForm() {
+  document.getElementById("myForm").style.display = "none";
 }

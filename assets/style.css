@@ -1,6 +1,8 @@
 body {
-  background-color: rgb(183, 181, 181);
+  background-color: rgba(113, 161, 183, 0.739);
 } 
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
 table {
   position: absolute;
   top: 150px;
@@ -19,51 +21,120 @@ td {
   border: 1px solid #dddddd;
   padding: 5px;
 }
+
 .table_div_vis {
   display: flex;
 }
 .table_div_invis {
   display: none;
 }
-.btn_op{
-  background-image: url(/img/otkr.jpg);
-  background-repeat: no-repeat;
-  position: absolute;
-    top: 90px;
-  width: 50px;
-  height: 50px;
-}
-.btn_close{
-  background-image: url(/img/zakr.jpeg);
-  position: absolute;
-    top: 90px;
-  background-repeat: no-repeat;
-  width: 50px;
-  height: 50px;
-}
-.btn_op{
-  background-image: url(/img/otkr.jpg);
-  background-repeat: no-repeat;
-  position: absolute;
-    top: 90px;
-    left: 90;;
-  width: 50px;
-  height: 50px;
-}
-.btn_filtr{
-  background-image: url(/img/otkr.jpg);
-  background-repeat: no-repeat;
-  position: absolute;
-    top: 90px;
-    left: 80px;
-  width: 50px;
-  height: 50px;
-}
+
 .txt{
   position: absolute;
   width: 200px;
   height: 44px;
     top: 90px;
-    left: 150px;
+    left: 20px;
     
+}
+.BPID {
+  position: absolute;
+  width: 200px;
+  height: 30px;
+    top: 60px;
+    left: 20px;
+}
+.FID {
+  position: absolute;
+  width: 200px;
+  height: 44px;
+    top: 90px;
+    left: 220px;
+}
+.BFID {
+  position: absolute;
+  width: 200px;
+  height: 30px;
+    top: 60px;
+    left: 220px;
+}
+.DelID {
+  position: absolute;
+  width: 200px;
+  height: 44px;
+    top: 90px;
+    left: 420px;
+}
+.BDelID {
+  position: absolute;
+  width: 200px;
+  height: 30px;
+    top: 60px;
+    left: 420px;
+}
+
+.open-button {
+  background-color: #2196F3;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: absolute;
+  top: 70px;
+  left: 700px;
+  width: 280px;
+}
+
+.form-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+  
+}
+
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+  
+}
+
+.form-container input[type=text], .form-container input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+.form-container .btn {
+  background-color: #1976D2;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.form-container .cancel {
+  background-color: #448AFF;
+}
+
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
 }

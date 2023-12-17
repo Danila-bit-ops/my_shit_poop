@@ -12,7 +12,7 @@ type Server struct {
 
 func NewServer(handler http.Handler) *Server {
 	return &Server{httpServer: &http.Server{
-		Addr:           ":6000",
+		Addr:           ":8080",
 		Handler:        handler,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
