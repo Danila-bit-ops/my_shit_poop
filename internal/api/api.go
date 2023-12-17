@@ -108,7 +108,7 @@ func (a *api) GetByID(c *gin.Context) {
 
 func (a *api) AddNewRecord(c *gin.Context) {
 	ctx := c.Request.Context()
-	timestamp, err := time.Parse("2006-01-02T15:04:05", c.PostForm("AddNewTimestamp"))
+	timestamp, err := time.Parse("2006-01-02T15:04", c.PostForm("AddNewTimestamp"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
 		return
