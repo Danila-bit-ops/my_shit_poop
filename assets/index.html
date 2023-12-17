@@ -26,7 +26,7 @@
 
 <button class="open-button" onclick="openForm()">Добавить строку</button>
 <div class="form-popup" id="myForm">
-  <form action="/submit" method="post" class="form-container">
+  <form action="http://localhost:8080/api/add-new-record" method="POST" class="form-container">
     <h1>Добавить строку</h1>
     <input type="text" placeholder="Введите ID" name="AddNewID" required>
     <input type="text" placeholder="Введите Val" name="AddNewVal" required>

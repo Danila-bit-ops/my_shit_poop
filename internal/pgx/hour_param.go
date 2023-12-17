@@ -15,60 +15,19 @@ func addWhere(addQ, q string) string {
 	return " where " + q
 }
 
-// func (r Repo) AddNewStringToDB(c *gin.Context) error {
-// 	ctx := c.Request.Context()
+func (r Repo) InsertHourParam(ctx context.Context, hourParam model.HourParam) (err error) {
+	const q = `insert into hour_params
+	(val, param_id, timestamp, change_by, xml_create, manual, comment)
+	values ($1, $2, $3, $4, $5, $6, $7)`
 
-// 	timest, err := time.Parse("2006-01-02T15:04:05", c.PostForm("AddNewTimestamp"))
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
-// 		return err
-// 	}
+	_, err = r.pool.Exec(ctx, q, hourParam.Val, hourParam.ParamID, hourParam.Timestamp,
+		hourParam.ChangeBy, hourParam.XMLCreate, hourParam.Manual, hourParam.Comment)
+	if err != nil {
+		return err
+	}
 
-// 	change_by := c.PostForm("AddNewChange")
-
-// 	comment := c.PostForm("AddNewComment")
-
-// 	val, err := strconv.ParseFloat(c.PostForm("AddNewVal"), 64)
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Val"})
-// 		return err
-// 	}
-
-// 	paramID, err := strconv.ParseInt(c.PostForm("AddNewParamID"), 10, 64)
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Param ID"})
-// 		return err
-// 	}
-
-// 	xmlcr, err := strconv.ParseBool(c.PostForm("AddNewXml"))
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid boolean format"})
-// 		return err
-// 	}
-
-// 	manual, err := strconv.ParseBool(c.PostForm("AddNewManual"))
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid boolean format"})
-// 		return err
-// 	}
-
-// 	newRecord := model.HourParam{
-// 		Timestamp: timest,
-// 		ChangeBy:  change_by,
-// 		Comment:   comment,
-// 		Val:       val,
-// 		ParamID:   paramID,
-// 		XMLCreate: xmlcr,
-// 		Manual:    manual,
-// 	}
-
-// 	err = r.AddHourParam(ctx, newRecord)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return err
-// 	}
-// 	c.JSON(http.StatusOK, gin.H{"message": "Record added successfully"})
-// }
+	return nil
+}
 
 func (r Repo) GetHourParamList(ctx context.Context, filter filter.HourParam) (_ model.HourParamList, err error) {
 	const q = `select id, val, param_id, timestamp, change_by, xml_create, manual, comment

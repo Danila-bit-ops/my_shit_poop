@@ -108,13 +108,13 @@ func (a *api) GetByID(c *gin.Context) {
 
 func (a *api) AddNewRecord(c *gin.Context) {
 	ctx := c.Request.Context()
-	timest, err := time.Parse("2006-01-02T15:04:05", c.PostForm("AddNewTimestamp"))
+	timestamp, err := time.Parse("2006-01-02T15:04:05", c.PostForm("AddNewTimestamp"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
 		return
 	}
 
-	change_by := c.PostForm("AddNewChange")
+	changeBy := c.PostForm("AddNewChange")
 
 	comment := c.PostForm("AddNewComment")
 
@@ -129,7 +129,6 @@ func (a *api) AddNewRecord(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Param ID"})
 		return
 	}
-
 	xmlcr, err := strconv.ParseBool(c.PostForm("AddNewXml"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid boolean format"})
@@ -142,27 +141,21 @@ func (a *api) AddNewRecord(c *gin.Context) {
 		return
 	}
 
-	newRecord := model.HourParam{
-		Timestamp: timest,
-		ChangeBy:  change_by,
+	err = a.srv.CreateHourParam(ctx, model.HourParam{
+		Timestamp: timestamp,
+		ChangeBy:  changeBy,
 		Comment:   comment,
 		Val:       val,
 		ParamID:   paramID,
 		XMLCreate: xmlcr,
 		Manual:    manual,
+	})
+	if err != nil {
+		log.Err(err).Msg("CreateHourParam")
+		c.Status(http.StatusInternalServerError)
+		return
 	}
 
-	_, err = db.Exec(`
-	INSERT INTO hour_params (val, timest, paramID, xmlcr, manual, change_by, comment)
-	VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-		newRecord.Val,
-		newRecord.Timestamp,
-		newRecord.ParamID,
-		newRecord.XMLCreate,
-		newRecord.Manual,
-		newRecord.ChangeBy,
-		newRecord.Comment,
-	)
 	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 100})
 	if err != nil {
 		log.Err(err).Msg("GetHourParamList")

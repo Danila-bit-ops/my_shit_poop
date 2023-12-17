@@ -20,8 +20,9 @@ import (
 
 func main() {
 	ctx := context.Background()
-	//connecting to postgres
-	pgxConnURL := "postgresql://test:test@localhost:5432/postgres?&sslmode=disable"
+	// connecting to postgres
+	// pgxConnURL := "postgresql://test:test@localhost:5432/postgres?&sslmode=disable"
+	pgxConnURL := "postgresql://index:Yfhenj@localhost:5432/index?&sslmode=disable"
 	pool, err := pgxpool.New(ctx, pgxConnURL)
 	if err != nil {
 		log.Fatalln(err)
