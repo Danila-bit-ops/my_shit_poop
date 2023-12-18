@@ -138,3 +138,18 @@ td {
 .form-container .btn:hover, .open-button:hover {
   opacity: 1;
 }
+
+/* .AddNewTimestamp {
+  background-color: #f1f1f1;
+  padding: 23px;
+  position: absolute;
+  transform: translate(-50%,-50%);
+  top: 120px;
+  left: 50%;
+  font-family: "Roboto Mono",monospace;
+  color: #9e9b9b;
+  font-size: 18px;
+  border: none;
+  outline: none;
+  border-radius: 0px;
+} */

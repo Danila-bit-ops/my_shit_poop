@@ -18,7 +18,7 @@
         <button class="BFID">Поиск по ID</button>
       </div>
     </form>
-    <form method="GET" action="http://localhost:8080/api/del-by-id">
+    <form method="POST" action="http://localhost:8080/api/del-by-id">
       <input type="text" id="DelID1" name="DelID" class="DelID" required>
       <button class="BDelID">Удалить по ID</button>
       </div>
@@ -30,7 +30,21 @@
     <h1>Добавить строку</h1>
     <input type="text" placeholder="Введите ID" name="AddNewID" required>
     <input type="text" placeholder="Введите Val" name="AddNewVal" required>
-    <input type="datetime-local" placeholder="Введите Timestamp" name="AddNewTimestamp" required>
+    <input type="datetime-local" placeholder="Введите Timestamp" name="AddNewTimestamp" class="AddNewTimestamp" style="  
+    background-color: #f1f1f1;
+    padding: 23px;
+    position: absolute;
+    transform: translate(-50%,-50%);
+    top: 120px;
+    left: 50%;
+    font-family: Roboto Mono;
+    color: #636363;
+    font-size: 18px;
+    border: none;
+    width: 280px;
+    height: 50px;
+    outline: none;
+    border-radius: 0px;">
     <input type="text" placeholder="Введите Param_ID" name="AddNewParamID" required>
     <input type="text" placeholder="Введите xml_create" name="AddNewXml" required>
     <input type="text" placeholder="Введите manual" name="AddNewManual" required>

@@ -41,7 +41,7 @@ func (a *api) initHandlers(r *gin.Engine) {
 		api.GET("/get-by-param-id", a.GetByParamID)
 		api.GET("/get-by-id", a.GetByID)
 		api.POST("/add-new-record", a.AddNewRecord)
-		// api.GET("/del-by-id", a.DelById)
+		api.POST("/del-by-id", a.RemoveRecord)
 	}
 }
 
@@ -103,6 +103,30 @@ func (a *api) GetByID(c *gin.Context) {
 		return
 	}
 
+	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
+}
+
+func (a *api) RemoveRecord(c *gin.Context) {
+	ctx := c.Request.Context()
+	id, err := strconv.ParseInt(c.PostForm("DelID"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	err = a.srv.DeleteHourParam(ctx, model.HourParam{
+		ID: id,
+	})
+	if err != nil {
+		log.Err(err).Msg("DeleteHourParam")
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 100})
+	if err != nil {
+		log.Err(err).Msg("GetHourParamList")
+		c.Status(http.StatusInternalServerError)
+		return
+	}
 	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
 }
 
