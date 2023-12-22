@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -31,9 +32,14 @@ func (a *api) InitRouter() *gin.Engine {
 
 func (a *api) initHandlers(r *gin.Engine) {
 	// serve static files
-	r.LoadHTMLGlob("assets/public/*.html")
+	// r.LoadHTMLGlob("assets/public/*.html")
+	// r.GET("/index", a.LoadIndexHTML)
+	// r.Static("/assets/src", "assets/src")
+	cmdDir, _ := filepath.Abs(filepath.Dir("./cmd"))
+	assetsDir := filepath.Join(cmdDir, ".", "assets")
+	r.LoadHTMLGlob(filepath.Join(assetsDir, "public/*.html"))
 	r.GET("/index", a.LoadIndexHTML)
-	r.Static("/assets/src", "assets/src")
+	r.Static("/assets/src", filepath.Join(assetsDir, "src"))
 
 	// api
 	api := r.Group("/api")
