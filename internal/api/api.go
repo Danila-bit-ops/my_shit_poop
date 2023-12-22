@@ -31,9 +31,9 @@ func (a *api) InitRouter() *gin.Engine {
 
 func (a *api) initHandlers(r *gin.Engine) {
 	// serve static files
-	r.LoadHTMLGlob("assets/*.html")
+	r.LoadHTMLGlob("assets/public/*.html")
 	r.GET("/index", a.LoadIndexHTML)
-	r.Static("/assets", "assets/")
+	r.Static("/assets/src", "assets/src")
 
 	// api
 	api := r.Group("/api")
