@@ -13,8 +13,9 @@ func (l HourParamList) ToHTMLTable() string {
 	for _, v := range l {
 		id := fmt.Sprintf("<td>%d</td>", v.ID)
 		paramID := fmt.Sprintf("<td>%d</td>", v.ParamID)
+		val := fmt.Sprintf("<td>%g</td>", v.Val)
 		timestamp := fmt.Sprintf("<td>%s</td>", v.Timestamp.Format(time.DateTime))
-		table += "<tr>" + id + paramID + timestamp + "</tr>"
+		table += "<tr>" + id + paramID + val + timestamp + "</tr>"
 	}
 
 	return table

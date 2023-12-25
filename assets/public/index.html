@@ -3,71 +3,130 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/assets/src/index.css">
-    <script src="/assets/src/index.js"></script>
-    <title>test go server</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
   <body>
-    <h1>TEST GOLANG SERVER</h1>
-    <form method="GET" action="http://localhost:8080/api/get-by-param-id">
-      <div class="btns">
-        <input type="text" id="txt1" name="txt1" class="txt" required>
-        <button class="BPID">Поиск по Param_ID</button>
-    </form>
-    <form method="GET" action="http://localhost:8080/api/get-by-id">
-        <input type="text" id="FID1" name="FilterID" class="FID" required>
-        <button class="BFID">Поиск по ID</button>
-      </div>
-    </form>
-    <form method="POST" action="http://localhost:8080/api/del-by-id">
-      <input type="text" id="DelID1" name="DelID" class="DelID" required>
-      <button class="BDelID">Удалить по ID</button>
-      </div>
-    </form>
-
-<button class="open-button" onclick="openForm()">Добавить строку</button>
-<div class="form-popup" id="myForm">
-  <form action="http://localhost:8080/api/add-new-record" method="POST" class="form-container">
-    <h1>Добавить строку</h1>
-    <input type="text" placeholder="Введите ID" name="AddNewID" required>
-    <input type="text" placeholder="Введите Val" name="AddNewVal" required>
-    <input type="datetime-local" placeholder="Введите Timestamp" name="AddNewTimestamp" class="AddNewTimestamp" style="  
-    background-color: #f1f1f1;
-    padding: 23px;
-    position: absolute;
-    transform: translate(-50%,-50%);
-    top: 120px;
-    left: 50%;
-    font-family: Roboto Mono;
-    color: #636363;
-    font-size: 18px;
-    border: none;
-    width: 280px;
-    height: 50px;
-    outline: none;
-    border-radius: 0px;">
-    <input type="text" placeholder="Введите Param_ID" name="AddNewParamID" required>
-    <input type="text" placeholder="Введите xml_create" name="AddNewXml" required>
-    <input type="text" placeholder="Введите manual" name="AddNewManual" required>
-    <input type="text" placeholder="Введите change_by" name="AddNewChange" required>
-    <input type="text" placeholder="Введите comment" name="AddNewComment" required>
-
-    <button type="submit" class="btn">Добавить</button>
-    <button type="button" class="btn cancel" onclick="closeForm()">Закрыть</button>
-  </form>
-</div>
-
-    <div id="div_tab"  class="table_div_vis">
-  <table>
-    <thead>
-      <tr><th>ID</th><th>Param_ID</th><th>Timestamp</th></tr> 
-    </thead>
-    <tbody>
-      {{ range $param := .list }}
-      <tr><td>{{.ID}}</td><td>{{.ParamID}}</td><td>{{.Timestamp.Format "2006-01-02 15:04:05"}}</td></tr>
-      <hr/>
-      {{end}}
-    </tbody>
-  </table>
+    <!-- Боковая панель -->
+    <div class="sidenav">
+      <button class="SearchId" onclick="openFormID()"></button>
+      <p class="side sideID">SearchId</p>
+      <button class="SearchParamId" onclick="openFormParamID()"></button>
+      <p class="side sideParamID">SearchParamId</p>
+      <button class="DelById" onclick="openFormDel()"></button>
+      <p class="side sideDel">DelById</p>
+      <button class="open-button" onclick="openForm()"></button>
+      <p class="side sideAdd">AddNewRecord</p>
+      <button class="open-button1" onclick="openForm1()"></button>
+      <p class="side sideUpd">UpdateRecord</p>
     </div>
+    <!-- Конец -->
+
+    <!-- Поиск по param_ID -->
+    <div class="form-popup" id="ParamIDSearch">
+      <form method="GET" action="http://localhost:8080/api/get-by-param-id" class="form-container">
+        <h1>Найти по Param_ID</h1>
+        <input type="text" id="txt1" name="txt1" class="txt" required>
+        <button type="submit" class="btn">Поиск по Param_ID</button>
+        <button type="button" class="btn cancel" onclick="closeFormParamID()">Закрыть</button>
+      </form>
+    </div>
+    <!-- Конец -->
+
+    <!-- Поиск по ID -->
+    <div class="form-popup" id="IDSearch">
+      <form method="GET" action="http://localhost:8080/api/get-by-id" class="form-container">
+        <h1>Найти по ID</h1>
+        <input type="text" id="FID1" name="FilterID" class="FID" required>
+        <button type="submit" class="btn">Поиск по ID</button>
+        <button type="button" class="btn cancel" onclick="closeFormID()">Закрыть</button>
+      </form>
+    </div>
+    <!-- Конец -->
+
+    <!-- Удаление -->
+    <div class="form-popup" id="DeleteID">
+      <form method="POST" action="http://localhost:8080/api/del-by-id" class="form-container">
+        <h1>Удалить строку</h1>
+        <input type="text" id="DelID1" name="DelID" class="DelID" required>
+        <button type="submit" class="btn">Удалить по ID</button>
+        <button type="button" class="btn cancel" onclick="closeFormDel()">Закрыть</button>
+      </form>
+    </div>
+    <!-- Конец -->
+
+    <!-- Форма для добавления новых строк -->  
+    <div class="form-popup" id="AddNewStr">
+      <form action="http://localhost:8080/api/add-new-record" method="POST" class="form-container">
+        <h1>Добавить строку</h1>
+        <input type="text" placeholder="Введите Val" name="AddNewVal" required>
+        <input type="text" placeholder="Введите Param_ID" name="AddNewParamID" required>
+        <input type="datetime-local" placeholder="Введите Timestamp" name="AddNewTimestamp" class="AddNewTimestamp">
+        <input type="text" placeholder="Введите xml_create (bool)" name="AddNewXml" required>
+        <input type="text" placeholder="Введите manual (bool)" name="AddNewManual" required>
+        <input type="text" placeholder="Введите change_by" name="AddNewChange" required>
+        <input type="text" placeholder="Введите comment" name="AddNewComment" required>
+        <button type="submit" class="btn">Добавить</button>
+        <button type="button" class="btn cancel" onclick="closeForm()">Закрыть</button>
+      </form>
+    </div>
+    <!-- Конец -->
+
+    <!-- Форма для редактирования строк -->
+    <div class="form-popup" id="UpdStr">
+      <form action="http://localhost:8080/api/update-by-id" method="POST" class="form-container">
+        <h1>Редактировать строку</h1>
+        <input type="text" placeholder="Введите ID" name="UpdID" required>
+        <input type="text" placeholder="Введите Val" name="UpdVal" required>
+        <input type="text" placeholder="Введите Param_ID" name="UpdParamID" required>
+        <input type="datetime-local" placeholder="Введите Timestamp" name="UpdTimestamp" class="AddNewTimestamp">
+        <input type="text" placeholder="Введите xml_create (bool)" name="UpdXml" required>
+        <input type="text" placeholder="Введите manual (bool)" name="UpdManual" required>
+        <input type="text" placeholder="Введите change_by" name="UpdChange" required>
+        <input type="text" placeholder="Введите comment" name="UpdComment" required>
+        <button type="submit" class="btn">Добавить</button>
+        <button type="button" class="btn cancel" onclick="closeForm1()">Закрыть</button>
+      </form>
+    </div>
+    <!-- Конец -->
+<!-- Таблица -->
+    <div class="scroll-table">
+	    <table>
+	    	<thead>
+		    	<tr>
+            <th onclick="sortTable(0)">ID</th>
+            <th onclick="sortTable(1)">Param_ID</th>
+            <th onclick="sortTable(2)">Val</th>
+            <th onclick="sortTable(3)">Timestamp</th>
+            <th onclick="sortTable(4)">ChangeBy</th>
+            <th onclick="sortTable(5)">XMLCreate</th>
+            <th onclick="sortTable(6)">Manual</th>
+            <th onclick="sortTable(7)">Comment</th>
+			    </tr>
+		    </thead>
+	    </table>	
+	    <div class="scroll-table-body">
+		    <table class="TableScroll" id="ScrollTable">
+			    <tbody>
+            {{ range $param := .list }}
+            <tr>
+              <td>{{.ID}}</td>
+              <td>{{.ParamID}}</td>
+              <td>{{.Val}}</td>
+              <td>{{.Timestamp.Format "15:04:05 02.01.2006"}}</td>
+              <td>{{.ChangeBy}}</td>
+              <td>{{.XMLCreate}}</td>
+              <td>{{.Manual}}</td>
+              <td>{{.Comment}}</td>
+            </tr>
+          {{end}}
+			    </tbody>
+		    </table>
+	    </div>	
+    </div>
+<!-- Конец -->
+<div id="app"></div>
+    <script src="/assets/src/index.js" type="text/babel"></script>
   </body>
 </html>
