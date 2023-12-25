@@ -54,46 +54,47 @@ function openFormDel() {
 function closeFormDel() {
   document.getElementById("DeleteID").style.display = "none";
 }
-// function toggleForm(elementId) {
-//   var div = document.querySelectorAll('.div');
-  
-//   div.forEach(function(div) {
-//       div.style.display = (div.id === elementId) ? "block" : "none";
-//   });
-// }
 
-// function closeForm(elementId) {
-//   document.getElementById(elementId).style.display = "none";
-// }
+function openFormRng() {
+  document.getElementById("TimeRng").style.display = "block";
+  document.getElementById("AddNewStr").style.display = "none";
+  document.getElementById("UpdStr").style.display = "none";
+  document.getElementById("ParamIDSearch").style.display = "none";
+  document.getElementById("IDSearch").style.display = "none";
+}
+function closeFormRng() {
+  document.getElementById("TimeRng").style.display = "none";
+}
 
 
-// function sortTable(columnIndex) {
-//   var table, rows, switching, i, x, y, shouldSwitch;
-//   table = document.getElementById("ScrollTable");
-//   switching = true;
 
-//   while (switching) {
-//       switching = false;
-//       rows = table.rows;
+function sortTable(columnIndex) {
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.getElementById("ScrollTable");
+  switching = true;
 
-//       for (i = 1; i < rows.length - 1; i++) {
-//           shouldSwitch = false;
-//           x = rows[i].getElementsByTagName("td")[columnIndex];
-//           y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+  while (switching) {
+      switching = false;
+      rows = table.rows;
 
-//           if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-//               shouldSwitch = true;
-//               break;
-//           }
-//       }
+      for (i = 0; i < rows.length - 1; i++) {
+          shouldSwitch = false;
+          x = parseFloat(rows[i].getElementsByTagName("td")[columnIndex].textContent.trim());
+          y = parseFloat(rows[i + 1].getElementsByTagName("td")[columnIndex].textContent.trim());
 
-//       if (shouldSwitch) {
-//           rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-//           switching = true;
-//       }
-//   }
-// }
-//
+          if (!isNaN(x) && !isNaN(y) && x > y) {
+              shouldSwitch = true;
+              break;
+          }
+      }
+
+      if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+      }
+  }
+}
+
 
 //Реакт
 const app = ReactDOMClient.createRoot((document.getElementById('app')))

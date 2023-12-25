@@ -38,6 +38,15 @@
 	background: #f3f3f3;
 }
  
+.sort {
+  background-image: url(/assets/src/Img/sort.jpeg);
+  position: fixed;
+  top: 12px;
+  /* left: 220px; */
+  background-size: contain;
+  width: 30px;
+  height: 30px;
+}
 /* Скролл */
 ::-webkit-scrollbar {
 	width: 6px;

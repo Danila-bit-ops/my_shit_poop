@@ -29,6 +29,28 @@ func (r Repo) InsertHourParam(ctx context.Context, hourParam model.HourParam) (e
 	return nil
 }
 
+func (r Repo) RangeHourParam(ctx context.Context, hourParam model.HourParam) (err error) {
+	const q = `select id, val, param_id, timestamp, change_by, xml_create, manual, comment
+	from hour_params where timestamp>$1 and timestamp<$2`
+	_, err = r.pool.Exec(ctx, q, hourParam.Timestamp)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r Repo) UpdateHourParam(ctx context.Context, hourParam model.HourParam) (err error) {
+	const q = `update hour_params
+	set val=$2, param_id=$3, timestamp=$4, change_by=$5, xml_create=$6, manual=$7, comment=$8
+	where id = $1`
+	_, err = r.pool.Exec(ctx, q, hourParam.ID, hourParam.Val, hourParam.ParamID, hourParam.Timestamp,
+		hourParam.ChangeBy, hourParam.XMLCreate, hourParam.Manual, hourParam.Comment)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r Repo) DelHourParam(ctx context.Context, hourParam model.HourParam) (err error) {
 	const q = `delete from hour_params where id = $1`
 

@@ -31,10 +31,6 @@ func (a *api) InitRouter() *gin.Engine {
 }
 
 func (a *api) initHandlers(r *gin.Engine) {
-	// serve static files
-	// r.LoadHTMLGlob("assets/public/*.html")
-	// r.GET("/index", a.LoadIndexHTML)
-	// r.Static("/assets/src", "assets/src")
 	cmdDir, _ := filepath.Abs(filepath.Dir("./cmd"))
 	assetsDir := filepath.Join(cmdDir, ".", "assets")
 	r.LoadHTMLGlob(filepath.Join(assetsDir, "public/*.html"))
@@ -48,6 +44,7 @@ func (a *api) initHandlers(r *gin.Engine) {
 		api.GET("/get-by-id", a.GetByID)
 		api.POST("/add-new-record", a.AddNewRecord)
 		api.POST("/del-by-id", a.RemoveRecord)
+		api.POST("/update-by-id", a.UpdateRecord)
 	}
 }
 
@@ -58,7 +55,7 @@ func (a *api) LoadIndexHTML(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 100})
+	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 50})
 	if err != nil {
 		log.Err(err).Msg("GetHourParamList")
 		c.Status(http.StatusInternalServerError)
@@ -127,7 +124,7 @@ func (a *api) RemoveRecord(c *gin.Context) {
 		c.Status(http.StatusInternalServerError)
 		return
 	}
-	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 100})
+	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 50})
 	if err != nil {
 		log.Err(err).Msg("GetHourParamList")
 		c.Status(http.StatusInternalServerError)
@@ -135,6 +132,97 @@ func (a *api) RemoveRecord(c *gin.Context) {
 	}
 	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
 }
+
+func (a *api) UpdateRecord(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	Id, err := strconv.ParseInt(c.PostForm("UpdID"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Param ID"})
+		return
+	}
+
+	timestamp, err := time.Parse("2006-01-02T15:04", c.PostForm("UpdTimestamp"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
+		return
+	}
+
+	changeBy := c.PostForm("UpdChange")
+
+	comment := c.PostForm("UpdComment")
+
+	val, err := strconv.ParseFloat(c.PostForm("UpdVal"), 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Val"})
+		return
+	}
+
+	paramID, err := strconv.ParseInt(c.PostForm("UpdParamID"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Param ID"})
+		return
+	}
+	xmlcr, err := strconv.ParseBool(c.PostForm("UpdXml"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid boolean format"})
+		return
+	}
+
+	manual, err := strconv.ParseBool(c.PostForm("UpdManual"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid boolean format"})
+		return
+	}
+
+	err = a.srv.UpdateHourParam(ctx, model.HourParam{
+		ID:        Id,
+		Timestamp: timestamp,
+		ChangeBy:  changeBy,
+		Comment:   comment,
+		Val:       val,
+		ParamID:   paramID,
+		XMLCreate: xmlcr,
+		Manual:    manual,
+	})
+
+	if err != nil {
+		log.Err(err).Msg("UpdateHourParam")
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 50})
+	if err != nil {
+		log.Err(err).Msg("GetHourParamList")
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
+}
+
+// func (a *api) FindRecordByRange(c *gin.Context) {
+// 	ctx := c.Request.Context()
+// 	timestampStart, err := time.Parse("2006-01-02T15:04", c.PostForm("RngStart"))
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
+// 		return
+// 	}
+// 	timestampEnd, err := time.Parse("2006-01-02T15:04", c.PostForm("RndEnd"))
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
+// 		return
+// 	}
+
+// 	list, err := a.srv.RangeHourParam(ctx, filter.HourParam{Timestamp: timestampStart})
+// 	if err != nil {
+// 		log.Err(err).Msg("GetHourParamList")
+// 		c.Status(http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
+// }
 
 func (a *api) AddNewRecord(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -186,7 +274,7 @@ func (a *api) AddNewRecord(c *gin.Context) {
 		return
 	}
 
-	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 100})
+	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 50})
 	if err != nil {
 		log.Err(err).Msg("GetHourParamList")
 		c.Status(http.StatusInternalServerError)

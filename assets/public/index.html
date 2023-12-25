@@ -20,9 +20,22 @@
       <p class="side sideAdd">AddNewRecord</p>
       <button class="open-button1" onclick="openForm1()"></button>
       <p class="side sideUpd">UpdateRecord</p>
+      <button class="TimeRange" onclick="openFormRng()"></button>
+      <p class="side sideRng">Range</p>
     </div>
     <!-- Конец -->
 
+    <!-- Поиск по ID -->
+    <div class="form-popup" id="IDSearch">
+          <form method="GET" action="http://localhost:8080/api/get-by-id" class="form-container">
+            <h1>Найти по ID</h1>
+            <input type="text" id="FID1" name="FilterID" class="FID" required>
+            <button type="submit" class="btn">Поиск по ID</button>
+            <button type="button" class="btn cancel" onclick="closeFormID()">Закрыть</button>
+          </form>
+    </div>
+    <!-- Конец -->
+    
     <!-- Поиск по param_ID -->
     <div class="form-popup" id="ParamIDSearch">
       <form method="GET" action="http://localhost:8080/api/get-by-param-id" class="form-container">
@@ -30,17 +43,6 @@
         <input type="text" id="txt1" name="txt1" class="txt" required>
         <button type="submit" class="btn">Поиск по Param_ID</button>
         <button type="button" class="btn cancel" onclick="closeFormParamID()">Закрыть</button>
-      </form>
-    </div>
-    <!-- Конец -->
-
-    <!-- Поиск по ID -->
-    <div class="form-popup" id="IDSearch">
-      <form method="GET" action="http://localhost:8080/api/get-by-id" class="form-container">
-        <h1>Найти по ID</h1>
-        <input type="text" id="FID1" name="FilterID" class="FID" required>
-        <button type="submit" class="btn">Поиск по ID</button>
-        <button type="button" class="btn cancel" onclick="closeFormID()">Закрыть</button>
       </form>
     </div>
     <!-- Конец -->
@@ -90,6 +92,17 @@
       </form>
     </div>
     <!-- Конец -->
+
+    <div class="form-popup" id="TimeRng">
+      <form method="POST" action="http://localhost:8080/api/get-range" class="form-container">
+        <h1>Найти в диапазоне</h1>
+        <input type="datetime-local" placeholder="Введите Timestamp" name="RngStart" class="AddNewTimestamp" required>
+        <input type="datetime-local" placeholder="Введите Timestamp" name="RndEnd" class="AddNewTimestamp" required>
+        <button type="submit" class="btn">Поиск</button>
+        <button type="button" class="btn cancel" onclick="closeFormRng()">Закрыть</button>
+      </form>
+    </div>
+
 <!-- Таблица -->
     <div class="scroll-table">
 	    <table>
