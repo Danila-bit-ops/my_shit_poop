@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"danilamukhin/serv_go/internal/api"
+	"danilamukhin/serv_go/internal/pgx"
+	"danilamukhin/serv_go/internal/service"
+	"danilamukhin/serv_go/pkg/server"
 	"errors"
 	"log"
 	"net/http"
@@ -9,11 +13,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	"danilamukhin/serv_go/internal/api"
-	"danilamukhin/serv_go/internal/pgx"
-	"danilamukhin/serv_go/internal/service"
-	"danilamukhin/serv_go/pkg/server"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

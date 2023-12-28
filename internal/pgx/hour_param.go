@@ -29,14 +29,38 @@ func (r Repo) InsertHourParam(ctx context.Context, hourParam model.HourParam) (e
 	return nil
 }
 
-func (r Repo) RangeHourParam(ctx context.Context, hourParam model.HourParam) (err error) {
+func (r Repo) RangeHourParam(ctx context.Context, hourParam filter.HourParam) (_ model.HourParamList, err error) {
 	const q = `select id, val, param_id, timestamp, change_by, xml_create, manual, comment
 	from hour_params where timestamp>$1 and timestamp<$2`
-	_, err = r.pool.Exec(ctx, q, hourParam.Timestamp)
+	rows, err := r.pool.Query(ctx, q, hourParam.DateFrom, hourParam.DateTo)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	defer rows.Close()
+
+	list := make(model.HourParamList, 0)
+	for rows.Next() {
+		var row model.HourParam
+		if err = rows.Scan(
+			&row.ID,
+			&row.Val,
+			&row.ParamID,
+			&row.Timestamp,
+			&row.ChangeBy,
+			&row.XMLCreate,
+			&row.Manual,
+			&row.Comment,
+		); err != nil {
+			return nil, err
+		}
+
+		list = append(list, row)
+	}
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+
+	return list, nil
 }
 
 func (r Repo) UpdateHourParam(ctx context.Context, hourParam model.HourParam) (err error) {

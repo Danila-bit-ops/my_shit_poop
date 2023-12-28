@@ -3,13 +3,15 @@ package filter
 import "time"
 
 type HourParam struct {
-	ID        int64
-	Value     int64
-	Timestamp time.Time
-	ParamID   int64
-	XmlCreate bool
-	Manual    bool
-	ChangeBy  string
-	Comment   string
-	Limit     int64
+	ID        int64     `json:"ID"`
+	Value     int64     `json:"Value"`
+	Timestamp time.Time `json:"Timestamp"`
+	DateFrom  time.Time `json:"DateFrom"`
+	DateTo    time.Time `json:"DateTo"`
+	ParamID   int64     `json:"ParamID"`
+	XmlCreate bool      `json:"XmlCreate"`
+	Manual    bool      `json:"Manual"`
+	ChangeBy  string    `json:"ChangeBy"`
+	Comment   string    `json:"Comment"`
+	Limit     int64     `json:"Limit"`
 }

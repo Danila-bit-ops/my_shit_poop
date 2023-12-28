@@ -140,6 +140,23 @@
   top: 203px;
   left: 35px;
 }
+.InputLimit {
+  position: fixed;
+  top: 250px;
+  left: 5px;
+  width: 120px;
+}
+
+.errImg {
+  background-size: contain;
+  color: rgb(217, 221, 224);
+  position: fixed;
+  top: 72px;
+  left: 400px;
+  width: 30px;
+  height: 30px;
+  display: none;
+}
 
 /*  */
 .form-popup {
@@ -206,7 +223,7 @@
   border-radius: 0px;
 }
 
-#UpdStr {
+/* #UpdStr {
   position: absolute;
   top: 150px;
 }
@@ -224,4 +241,4 @@
 #DeleteID {
   position: absolute;
   top: 70px;
-}
+} */

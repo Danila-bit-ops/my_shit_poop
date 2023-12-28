@@ -15,7 +15,7 @@ func (s Service) UpdateHourParam(ctx context.Context, hourParam model.HourParam)
 	return s.repo.UpdateHourParam(ctx, hourParam)
 }
 
-func (s Service) RangeHourParam(ctx context.Context, hourParam model.HourParam) (err error) {
+func (s Service) RangeHourParam(ctx context.Context, hourParam filter.HourParam) (_ model.HourParamList, err error) {
 	return s.repo.RangeHourParam(ctx, hourParam)
 }
 

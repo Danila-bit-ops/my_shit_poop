@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -45,53 +46,98 @@ func (a *api) initHandlers(r *gin.Engine) {
 		api.POST("/add-new-record", a.AddNewRecord)
 		api.POST("/del-by-id", a.RemoveRecord)
 		api.POST("/update-by-id", a.UpdateRecord)
+		api.GET("/get-range", a.FindRecordByRange)
+		api.GET("/table-hour-params", a.TableHourParam)
+
 	}
 }
 
-func (a *api) LoadIndexHTML(c *gin.Context) {
-	type Data struct {
-		Test string
-	}
-
+func (a *api) TableHourParam(c *gin.Context) {
 	ctx := c.Request.Context()
+	// inputData := c.Query("FilterID")
+	// fmt.Println("Полученные данные:", inputData)
+	// ID, err := strconv.ParseInt(inputData, 10, 64)
+	// if err != nil {
+	// 	log.Err(err).Msg("ParseInt")
+	// 	c.Status(http.StatusBadRequest)
+	// 	return
+	// }
+	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 200})
 
-	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 50})
 	if err != nil {
 		log.Err(err).Msg("GetHourParamList")
-		c.Status(http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return
 	}
 
-	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
+	c.JSON(http.StatusOK, gin.H{"list": list})
 }
 
+func (a *api) LoadIndexHTML(c *gin.Context) {
+	// type Data struct {
+	// 	Test string
+	// }
+
+	// ctx := c.Request.Context()
+
+	// list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 100})
+	// if err != nil {
+	// 	log.Err(err).Msg("GetHourParamList")
+	// 	c.Status(http.StatusInternalServerError)
+	// 	return
+	// }
+
+	c.HTML(http.StatusOK, "index.html", nil)
+	// c.JSON(http.StatusOK, gin.H{"list": list})
+}
+
+// Поиск по Param_ID
 func (a *api) GetByParamID(c *gin.Context) {
 	ctx := c.Request.Context()
-
-	sParamID := c.Query("txt1")
-
+	sParamID := c.Query("FilterParamID")
+	fmt.Println(sParamID)
 	paramID, err := strconv.ParseInt(sParamID, 10, 64)
 	if err != nil {
 		log.Err(err).Msg("ParseInt")
 		c.Status(http.StatusBadRequest)
 		return
 	}
+	lim := c.Query("Limit")
+	if lim != "" {
+		Limit, err := strconv.ParseInt(lim, 10, 64)
+		if err != nil {
+			log.Err(err).Msg("ParseInt")
+			c.Status(http.StatusBadRequest)
+			return
+		}
+		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{ParamID: paramID, Limit: Limit})
+		if err != nil {
+			log.Err(err).Msg("GetHourParamList")
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		// fmt.Println(list)
 
-	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{ParamID: paramID})
-	if err != nil {
-		log.Err(err).Msg("GetHourParamList")
-		c.Status(http.StatusInternalServerError)
-		return
+		c.JSON(http.StatusOK, gin.H{"list": list})
+	} else {
+		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{ParamID: paramID})
+		if err != nil {
+			log.Err(err).Msg("GetHourParamList")
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		// fmt.Println(list)
+
+		c.JSON(http.StatusOK, gin.H{"list": list})
 	}
 
-	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
 }
 
+// Поиск по ID
 func (a *api) GetByID(c *gin.Context) {
 	ctx := c.Request.Context()
-
 	sID := c.Query("FilterID")
-
+	fmt.Println("sID =  " + sID)
 	ID, err := strconv.ParseInt(sID, 10, 64)
 	if err != nil {
 		log.Err(err).Msg("ParseInt")
@@ -99,16 +145,37 @@ func (a *api) GetByID(c *gin.Context) {
 		return
 	}
 
-	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{ID: ID})
-	if err != nil {
-		log.Err(err).Msg("GetHourParamList")
-		c.Status(http.StatusInternalServerError)
-		return
-	}
+	lim := c.Query("Limit")
+	if lim != "" {
+		Limit, err := strconv.ParseInt(lim, 10, 64)
+		if err != nil {
+			log.Err(err).Msg("ParseInt")
+			c.Status(http.StatusBadRequest)
+			return
+		}
+		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{ID: ID, Limit: Limit})
+		if err != nil {
+			log.Err(err).Msg("GetHourParamList")
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		// fmt.Println(list)
 
-	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
+		c.JSON(http.StatusOK, gin.H{"list": list})
+	} else {
+		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{ID: ID})
+		if err != nil {
+			log.Err(err).Msg("GetHourParamList")
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		// fmt.Println(list)
+
+		c.JSON(http.StatusOK, gin.H{"list": list})
+	}
 }
 
+// Удалить запись
 func (a *api) RemoveRecord(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := strconv.ParseInt(c.PostForm("DelID"), 10, 64)
@@ -133,6 +200,7 @@ func (a *api) RemoveRecord(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
 }
 
+// Редактировать запись
 func (a *api) UpdateRecord(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -201,29 +269,52 @@ func (a *api) UpdateRecord(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
 }
 
-// func (a *api) FindRecordByRange(c *gin.Context) {
-// 	ctx := c.Request.Context()
-// 	timestampStart, err := time.Parse("2006-01-02T15:04", c.PostForm("RngStart"))
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
-// 		return
-// 	}
-// 	timestampEnd, err := time.Parse("2006-01-02T15:04", c.PostForm("RndEnd"))
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
-// 		return
-// 	}
+// Найти записи в определённом временном интервале
+func (a *api) FindRecordByRange(c *gin.Context) {
+	ctx := c.Request.Context()
+	// fmt.Println(c.Query("RngStart"))
+	timestampStart, err := time.Parse("2006-01-02T15:04", c.Query("RngStart"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
+		return
+	}
+	timestampEnd, err := time.Parse("2006-01-02T15:04", c.Query("RngEnd"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
+		return
+	}
 
-// 	list, err := a.srv.RangeHourParam(ctx, filter.HourParam{Timestamp: timestampStart})
-// 	if err != nil {
-// 		log.Err(err).Msg("GetHourParamList")
-// 		c.Status(http.StatusInternalServerError)
-// 		return
-// 	}
+	lim := c.Query("Limit")
+	if lim != "" {
+		Limit, err := strconv.ParseInt(lim, 10, 64)
+		if err != nil {
+			log.Err(err).Msg("ParseInt")
+			c.Status(http.StatusBadRequest)
+			return
+		}
+		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{DateFrom: timestampStart, DateTo: timestampEnd, Limit: Limit})
+		if err != nil {
+			log.Err(err).Msg("GetHourParamList")
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		// fmt.Println(list)
 
-// 	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
-// }
+		c.JSON(http.StatusOK, gin.H{"list": list})
+	} else {
+		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{DateFrom: timestampStart, DateTo: timestampEnd})
+		if err != nil {
+			log.Err(err).Msg("GetHourParamList")
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		// fmt.Println(list)
 
+		c.JSON(http.StatusOK, gin.H{"list": list})
+	}
+}
+
+// Добавить запись
 func (a *api) AddNewRecord(c *gin.Context) {
 	ctx := c.Request.Context()
 	timestamp, err := time.Parse("2006-01-02T15:04", c.PostForm("AddNewTimestamp"))
