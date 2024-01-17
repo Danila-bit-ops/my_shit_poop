@@ -2,6 +2,7 @@
 .scroll-table {
   position: absolute;
   left: 150px;
+  height: 90%;
   /* top: 150px; */
 }
 .table-container {

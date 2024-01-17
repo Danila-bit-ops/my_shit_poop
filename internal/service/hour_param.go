@@ -26,3 +26,7 @@ func (s Service) DeleteHourParam(ctx context.Context, hourParam model.HourParam)
 func (s Service) GetHourParamList(ctx context.Context, filter filter.HourParam) (_ model.HourParamList, err error) {
 	return s.repo.GetHourParamList(ctx, filter)
 }
+
+// func (s Service) GetHourParamLazyLoadingList(ctx context.Context, filter filter.HourParam) (_ model.HourParamList, err error) {
+// 	return s.repo.GetHourParamLazyLoadingList(ctx, filter)
+// }

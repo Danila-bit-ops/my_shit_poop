@@ -31,8 +31,16 @@ func (r Repo) InsertHourParam(ctx context.Context, hourParam model.HourParam) (e
 
 func (r Repo) RangeHourParam(ctx context.Context, hourParam filter.HourParam) (_ model.HourParamList, err error) {
 	const q = `select id, val, param_id, timestamp, change_by, xml_create, manual, comment
-	from hour_params where timestamp>$1 and timestamp<$2`
-	rows, err := r.pool.Query(ctx, q, hourParam.DateFrom, hourParam.DateTo)
+	from hour_params where timestamp>=$1 and timestamp<=$2 %s limit 100`
+	var (
+		offsetQ string
+	)
+
+	if hourParam.Offset > 0 {
+		offsetQ = fmt.Sprintf("offset %d", hourParam.Offset)
+	}
+
+	rows, err := r.pool.Query(ctx, fmt.Sprintf(q, offsetQ), hourParam.DateFrom, hourParam.DateTo)
 	if err != nil {
 		return nil, err
 	}
@@ -87,12 +95,12 @@ func (r Repo) DelHourParam(ctx context.Context, hourParam model.HourParam) (err 
 
 func (r Repo) GetHourParamList(ctx context.Context, filter filter.HourParam) (_ model.HourParamList, err error) {
 	const q = `select id, val, param_id, timestamp, change_by, xml_create, manual, comment
-	from hour_params %s %s`
+	from hour_params %s %s limit 100`
 
 	var (
-		addQ   string
-		limitQ string
-		params []any
+		addQ    string
+		offsetQ string
+		params  []any
 	)
 	if filter.ID > 0 {
 		params = append(params, filter.ID)
@@ -102,11 +110,11 @@ func (r Repo) GetHourParamList(ctx context.Context, filter filter.HourParam) (_ 
 		params = append(params, filter.ParamID)
 		addQ = addWhere(addQ, fmt.Sprintf("param_id = $%d", len(params)))
 	}
-	if filter.Limit > 0 {
-		limitQ = fmt.Sprintf("limit %d", filter.Limit)
+	if filter.Offset > 0 {
+		offsetQ = fmt.Sprintf("offset %d", filter.Offset)
 	}
 
-	rows, err := r.pool.Query(ctx, fmt.Sprintf(q, addQ, limitQ), params...)
+	rows, err := r.pool.Query(ctx, fmt.Sprintf(q, addQ, offsetQ), params...)
 	if err != nil {
 		return nil, err
 	}

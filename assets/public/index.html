@@ -3,13 +3,18 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/assets/src/index.css">
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script> -->
+    <link rel="shortcut icon" href="#" />
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.3.js"
+      integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+      crossorigin="anonymous">
+    </script> 
   </head>
   <body>
-    
     <!-- Боковая панель -->
     <div class="sidenav">
       <button class="SearchId" onclick="toggleForm('IDSearch')"></button>
@@ -24,7 +29,6 @@
       <p class="side sideUpd">UpdateRecord</p>
       <button class="TimeRange" onclick="toggleForm('TimeRng')"></button>
       <p class="side sideRng">Range</p>
-      <input type="text" class="InputLimit" id="Limit" placeholder="Введите Limit">
       
     </div>
     <!-- Конец -->
@@ -36,7 +40,8 @@
             <input type="text" id="FilterID" name="FilterID" class="FID" oninput="validateInput('FilterID','ButtonID','errID')" required>
             <img src="/assets/src/Img/err.png" id="errID" class="errImg">
             <button type="button" class="btn" onclick="sendGETRequest('get-by-id?', 'FilterID')" id="ButtonID">Поиск по ID</button>
-            <button type="button" class="btn cancel" onclick="CloseForm('IDSearch')">Закрыть</button>
+            <button type="button" class="cancel" onclick="CloseForm('IDSearch')"></button>
+            
           </form>
     </div>
     <!-- Конец -->
@@ -48,54 +53,54 @@
         <input type="text" id="FilterParamID" name="txt1" class="txt" oninput="validateInput('FilterParamID','ButtonParamID','errParamID')" required>
         <img src="/assets/src/Img/err.png" id="errParamID" class="errImg">
         <button type="button" class="btn" onclick="sendGETRequest('get-by-param-id?', 'FilterParamID')" id="ButtonParamID">Поиск по Param_ID</button>
-        <button type="button" class="btn cancel" onclick="CloseForm('ParamIDSearch')">Закрыть</button>
+        <button type="button" class="cancel" onclick="CloseForm('ParamIDSearch')"></button>
       </form>
     </div>
     <!-- Конец -->
 
     <!-- Удаление -->
     <div class="form-popup form" id="DeleteID">
-      <form method="POST" action="http://localhost:8080/api/del-by-id" class="form-container">
+      <form class="form-container">
         <h1>Удалить строку</h1>
         <input type="text" id="DelID1" name="DelID" class="DelID" oninput="validateInput('DelID1','ButtonDel','errDel')" required>
         <img src="/assets/src/Img/err.png" id="errDel" class="errImg">
-        <button type="submit" class="btn" id="ButtonDel">Удалить по ID</button>
-        <button type="button" class="btn cancel" onclick="CloseForm('DeleteID')">Закрыть</button>
+        <button type="button" class="btn" onclick="deletePOSTRequest('DelID1')" id="ButtonDel">Удалить по ID</button>
+        <button type="button" class="cancel" onclick="CloseForm('DeleteID')"></button>
       </form>
     </div>
     <!-- Конец -->
 
     <!-- Форма для добавления новых строк -->  
     <div class="form-popup form" id="AddNewStr">
-      <form action="http://localhost:8080/api/add-new-record" method="POST" class="form-container">
+      <form class="form-container">
         <h1>Добавить строку</h1>
         <input type="text" placeholder="Введите Val" name="AddNewVal" id="Add1" oninput="validateInputVal('Add1','ButtonAdd')" required>
         <input type="text" placeholder="Введите Param_ID" name="AddNewParamID" id="Add2" oninput="validateInput('Add2','ButtonAdd')" required>
-        <input type="datetime-local" placeholder="Введите Timestamp" name="AddNewTimestamp" class="AddNewTimestamp">
-        <input type="text" placeholder="Введите xml_create (bool)" name="AddNewXml" required>
-        <input type="text" placeholder="Введите manual (bool)" name="AddNewManual" required>
-        <input type="text" placeholder="Введите change_by" name="AddNewChange" required>
-        <input type="text" placeholder="Введите comment" name="AddNewComment" required>
-        <button type="submit" class="btn" id="ButtonAdd">Добавить</button>
-        <button type="button" class="btn cancel" onclick="CloseForm('AddNewStr')">Закрыть</button>
+        <input type="datetime-local" placeholder="Введите Timestamp" name="AddNewTimestamp" class="AddNewTimestamp" id="Add3">
+        <input type="text" placeholder="Введите xml_create (bool)" name="AddNewXml" id="Add4" required>
+        <input type="text" placeholder="Введите manual (bool)" name="AddNewManual" id="Add5" required>
+        <input type="text" placeholder="Введите change_by" name="AddNewChange" id="Add6" required>
+        <input type="text" placeholder="Введите comment" name="AddNewComment" id="Add7" required>
+        <button type="button" onclick="addNewRecord('Add1','Add2','Add3', 'Add4', 'Add5', 'Add6', 'Add7')" class="btn" id="ButtonAdd">Добавить</button>
+        <button type="button" class="cancel" onclick="CloseForm('AddNewStr')"></button>
       </form>
     </div>
     <!-- Конец -->
 
     <!-- Форма для редактирования строк -->
     <div class="form-popup form" id="UpdStr">
-      <form action="http://localhost:8080/api/update-by-id" method="POST" class="form-container">
+      <form class="form-container">
         <h1>Редактировать строку</h1>
         <input type="text" placeholder="Введите ID" name="UpdID" id="Upd1" oninput="validateInput('Upd1','ButtonUpd')" required>
         <input type="text" placeholder="Введите Val" name="UpdVal" id="Upd2" oninput="validateInputVal('Upd2','ButtonUpd')" required>
         <input type="text" placeholder="Введите Param_ID" name="UpdParamID" id="Upd3" oninput="validateInput('Upd3','ButtonUpd')" required>
-        <input type="datetime-local" placeholder="Введите Timestamp" name="UpdTimestamp" class="AddNewTimestamp">
-        <input type="text" placeholder="Введите xml_create (bool)" name="UpdXml" required>
-        <input type="text" placeholder="Введите manual (bool)" name="UpdManual" required>
-        <input type="text" placeholder="Введите change_by" name="UpdChange" required>
-        <input type="text" placeholder="Введите comment" name="UpdComment" required>
-        <button type="submit" class="btn" id="ButtonUpd">Добавить</button>
-        <button type="button" class="btn cancel" onclick="CloseForm('UpdStr')">Закрыть</button>
+        <input type="datetime-local" placeholder="Введите Timestamp" name="UpdTimestamp" id="Upd4" class="AddNewTimestamp">
+        <input type="text" placeholder="Введите xml_create (bool)" name="UpdXml" id="Upd5" required>
+        <input type="text" placeholder="Введите manual (bool)" name="UpdManual" id="Upd6" required>
+        <input type="text" placeholder="Введите change_by" name="UpdChange" id="Upd7" required>
+        <input type="text" placeholder="Введите comment" name="UpdComment" id="Upd8" required>
+        <button type="button" class="btn" onclick="updRecord('Upd1','Upd2','Upd3','Upd4','Upd5','Upd6','Upd7','Upd8',)" id="ButtonUpd">Добавить</button>
+        <button type="button" class="cancel" onclick="CloseForm('UpdStr')"></button>
       </form>
     </div>
     <!-- Конец -->
@@ -107,7 +112,7 @@
         <input type="datetime-local" placeholder="Введите Timestamp" name="RngStart" id="RngStart" class="AddNewTimestamp" required>
         <input type="datetime-local" placeholder="Введите Timestamp" name="RngEnd" id="RngEnd" class="AddNewTimestamp" required>
         <button type="button" class="btn" onclick="sendGETRequest('get-range?','RngStart','RngEnd')">Поиск</button>
-        <button type="button" class="btn cancel" onclick="CloseForm('TimeRng')">Закрыть</button>
+        <button type="button" class="cancel" onclick="CloseForm('TimeRng')"></button>
       </form>
     </div>
     <!-- Конец -->
@@ -136,7 +141,9 @@
 	    </div>	
     </div>
     <!-- Конец -->
-    <script src="/assets/src/index.js" type="text/babel"></script>
+    <button class="top" id="top" onclick="scrollToTop()"></button>
+    <script src="/assets/src/index.js"></script>
     <script src="/assets/src/fetch.js"></script>
+    <script src="/assets/src/lazy-loading-table.js"></script>
   </body>
 </html>

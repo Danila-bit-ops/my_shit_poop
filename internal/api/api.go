@@ -15,6 +15,26 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+type HourParamRequest struct {
+	Timestamp string `json:"AddNewTimestamp"`
+	ChangeBy  string `json:"AddNewChange"`
+	Comment   string `json:"AddNewComment"`
+	Val       string `json:"AddNewVal"`
+	ParamID   string `json:"AddNewParamID"`
+	XMLCreate string `json:"AddNewXml"`
+	Manual    string `json:"AddNewManual"`
+}
+type HourParamUpd struct {
+	ID        string `json:"UpdID"`
+	Timestamp string `json:"UpdTimestamp"`
+	ChangeBy  string `json:"UpdChange"`
+	Comment   string `json:"UpdComment"`
+	Val       string `json:"UpdVal"`
+	ParamID   string `json:"UpdParamID"`
+	XMLCreate string `json:"UpdXml"`
+	Manual    string `json:"UpdManual"`
+}
+
 func InitApi(srv *service.Service) *api {
 	return &api{
 		srv: srv,
@@ -48,20 +68,77 @@ func (a *api) initHandlers(r *gin.Engine) {
 		api.POST("/update-by-id", a.UpdateRecord)
 		api.GET("/get-range", a.FindRecordByRange)
 		api.GET("/table-hour-params", a.TableHourParam)
-
+		api.GET("/lazy-loading", a.LazyLoading)
 	}
 }
 
+// Lazy-Loading
+func (a *api) LazyLoading(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	sOffset := c.Query("Offset")
+	Offset, err := strconv.ParseInt(sOffset, 10, 64)
+	if err != nil {
+		log.Err(err).Msg("ParseInt")
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	sFilter := c.Query("FilterParamID")
+
+	if c.Query("RngStart") != "" {
+		timestampStart, err := time.Parse("2006-01-02T15:04", c.Query("RngStart"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
+			return
+		}
+
+		timestampEnd, err := time.Parse("2006-01-02T15:04", c.Query("RngEnd"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
+			return
+		}
+
+		list, err := a.srv.RangeHourParam(ctx, filter.HourParam{DateFrom: timestampStart, DateTo: timestampEnd, Offset: Offset})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"list": list})
+
+	} else if sFilter != "" {
+		Param_ID, err := strconv.ParseInt(sFilter, 10, 64)
+
+		if err != nil {
+			log.Err(err).Msg("ParseInt")
+			c.Status(http.StatusBadRequest)
+			return
+		}
+
+		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Offset: Offset, ParamID: Param_ID})
+		if err != nil {
+			log.Err(err).Msg("GetHourParamList")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"list": list})
+	} else {
+		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Offset: Offset})
+		if err != nil {
+			log.Err(err).Msg("GetHourParamList")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"list": list})
+	}
+}
+
+//End
+
 func (a *api) TableHourParam(c *gin.Context) {
 	ctx := c.Request.Context()
-	// inputData := c.Query("FilterID")
-	// fmt.Println("Полученные данные:", inputData)
-	// ID, err := strconv.ParseInt(inputData, 10, 64)
-	// if err != nil {
-	// 	log.Err(err).Msg("ParseInt")
-	// 	c.Status(http.StatusBadRequest)
-	// 	return
-	// }
 	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 200})
 
 	if err != nil {
@@ -74,64 +151,29 @@ func (a *api) TableHourParam(c *gin.Context) {
 }
 
 func (a *api) LoadIndexHTML(c *gin.Context) {
-	// type Data struct {
-	// 	Test string
-	// }
-
-	// ctx := c.Request.Context()
-
-	// list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 100})
-	// if err != nil {
-	// 	log.Err(err).Msg("GetHourParamList")
-	// 	c.Status(http.StatusInternalServerError)
-	// 	return
-	// }
-
 	c.HTML(http.StatusOK, "index.html", nil)
-	// c.JSON(http.StatusOK, gin.H{"list": list})
 }
 
 // Поиск по Param_ID
 func (a *api) GetByParamID(c *gin.Context) {
 	ctx := c.Request.Context()
 	sParamID := c.Query("FilterParamID")
-	fmt.Println(sParamID)
 	paramID, err := strconv.ParseInt(sParamID, 10, 64)
 	if err != nil {
 		log.Err(err).Msg("ParseInt")
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	lim := c.Query("Limit")
-	if lim != "" {
-		Limit, err := strconv.ParseInt(lim, 10, 64)
-		if err != nil {
-			log.Err(err).Msg("ParseInt")
-			c.Status(http.StatusBadRequest)
-			return
-		}
-		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{ParamID: paramID, Limit: Limit})
-		if err != nil {
-			log.Err(err).Msg("GetHourParamList")
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-		// fmt.Println(list)
-
-		c.JSON(http.StatusOK, gin.H{"list": list})
-	} else {
-		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{ParamID: paramID})
-		if err != nil {
-			log.Err(err).Msg("GetHourParamList")
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-		// fmt.Println(list)
-
-		c.JSON(http.StatusOK, gin.H{"list": list})
+	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{ParamID: paramID})
+	if err != nil {
+		log.Err(err).Msg("GetHourParamList")
+		c.Status(http.StatusInternalServerError)
+		return
 	}
-
+	c.JSON(http.StatusOK, gin.H{"list": list})
 }
+
+// Конец
 
 // Поиск по ID
 func (a *api) GetByID(c *gin.Context) {
@@ -175,176 +217,183 @@ func (a *api) GetByID(c *gin.Context) {
 	}
 }
 
+// Конец
+
 // Удалить запись
 func (a *api) RemoveRecord(c *gin.Context) {
 	ctx := c.Request.Context()
-	id, err := strconv.ParseInt(c.PostForm("DelID"), 10, 64)
-	if err != nil {
+
+	var data struct {
+		ID int64 `json:"ID"`
+	}
+	// Парсим JSON-данные из тела запроса
+	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	err = a.srv.DeleteHourParam(ctx, model.HourParam{
-		ID: id,
-	})
-	if err != nil {
-		log.Err(err).Msg("DeleteHourParam")
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 50})
+	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{ID: data.ID})
 	if err != nil {
 		log.Err(err).Msg("GetHourParamList")
 		c.Status(http.StatusInternalServerError)
 		return
 	}
-	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
+
+	fmt.Println(len(list))
+	if len(list) != 0 {
+		err := a.srv.DeleteHourParam(ctx, model.HourParam{
+			ID: data.ID,
+		})
+		if err != nil {
+			log.Err(err).Msg("DeleteHourParam")
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Данные успешно удалены из базы данных"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "Нет такого ID"})
+	}
 }
+
+// Конец
 
 // Редактировать запись
 func (a *api) UpdateRecord(c *gin.Context) {
 	ctx := c.Request.Context()
+	var data HourParamUpd
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
 
-	Id, err := strconv.ParseInt(c.PostForm("UpdID"), 10, 64)
+	Id, err := strconv.ParseInt(data.ID, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Param ID"})
 		return
 	}
 
-	timestamp, err := time.Parse("2006-01-02T15:04", c.PostForm("UpdTimestamp"))
+	timestamp, err := time.Parse("2006-01-02T15:04", data.Timestamp)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
 		return
 	}
 
-	changeBy := c.PostForm("UpdChange")
+	changeBy := data.ChangeBy
 
-	comment := c.PostForm("UpdComment")
+	comment := data.Comment
 
-	val, err := strconv.ParseFloat(c.PostForm("UpdVal"), 64)
+	val, err := strconv.ParseFloat(data.Val, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Val"})
 		return
 	}
 
-	paramID, err := strconv.ParseInt(c.PostForm("UpdParamID"), 10, 64)
+	paramID, err := strconv.ParseInt(data.ParamID, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Param ID"})
 		return
 	}
-	xmlcr, err := strconv.ParseBool(c.PostForm("UpdXml"))
+	xmlcr, err := strconv.ParseBool(data.XMLCreate)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid boolean format"})
 		return
 	}
 
-	manual, err := strconv.ParseBool(c.PostForm("UpdManual"))
+	manual, err := strconv.ParseBool(data.Manual)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid boolean format"})
 		return
 	}
 
-	err = a.srv.UpdateHourParam(ctx, model.HourParam{
-		ID:        Id,
-		Timestamp: timestamp,
-		ChangeBy:  changeBy,
-		Comment:   comment,
-		Val:       val,
-		ParamID:   paramID,
-		XMLCreate: xmlcr,
-		Manual:    manual,
-	})
-
-	if err != nil {
-		log.Err(err).Msg("UpdateHourParam")
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-
-	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 50})
+	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{ID: Id})
 	if err != nil {
 		log.Err(err).Msg("GetHourParamList")
 		c.Status(http.StatusInternalServerError)
 		return
 	}
-	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
+	if len(list) != 0 {
+		err = a.srv.UpdateHourParam(ctx, model.HourParam{
+			ID:        Id,
+			Timestamp: timestamp,
+			ChangeBy:  changeBy,
+			Comment:   comment,
+			Val:       val,
+			ParamID:   paramID,
+			XMLCreate: xmlcr,
+			Manual:    manual,
+		})
+
+		if err != nil {
+			log.Err(err).Msg("UpdateHourParam")
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Данные успешно изменены"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "Нет такого ID"})
+	}
 }
+
+// Конец
 
 // Найти записи в определённом временном интервале
 func (a *api) FindRecordByRange(c *gin.Context) {
 	ctx := c.Request.Context()
-	// fmt.Println(c.Query("RngStart"))
+
 	timestampStart, err := time.Parse("2006-01-02T15:04", c.Query("RngStart"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
 		return
 	}
+
 	timestampEnd, err := time.Parse("2006-01-02T15:04", c.Query("RngEnd"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
 		return
 	}
 
-	lim := c.Query("Limit")
-	if lim != "" {
-		Limit, err := strconv.ParseInt(lim, 10, 64)
-		if err != nil {
-			log.Err(err).Msg("ParseInt")
-			c.Status(http.StatusBadRequest)
-			return
-		}
-		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{DateFrom: timestampStart, DateTo: timestampEnd, Limit: Limit})
-		if err != nil {
-			log.Err(err).Msg("GetHourParamList")
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-		// fmt.Println(list)
-
-		c.JSON(http.StatusOK, gin.H{"list": list})
-	} else {
-		list, err := a.srv.GetHourParamList(ctx, filter.HourParam{DateFrom: timestampStart, DateTo: timestampEnd})
-		if err != nil {
-			log.Err(err).Msg("GetHourParamList")
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-		// fmt.Println(list)
-
-		c.JSON(http.StatusOK, gin.H{"list": list})
+	list, err := a.srv.RangeHourParam(ctx, filter.HourParam{DateFrom: timestampStart, DateTo: timestampEnd})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, gin.H{"list": list})
 }
+
+// Конец
 
 // Добавить запись
 func (a *api) AddNewRecord(c *gin.Context) {
 	ctx := c.Request.Context()
-	timestamp, err := time.Parse("2006-01-02T15:04", c.PostForm("AddNewTimestamp"))
+	var data HourParamRequest
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	timestamp, err := time.Parse("2006-01-02T15:04", data.Timestamp)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid timestamp format"})
 		return
 	}
-
-	changeBy := c.PostForm("AddNewChange")
-
-	comment := c.PostForm("AddNewComment")
-
-	val, err := strconv.ParseFloat(c.PostForm("AddNewVal"), 64)
+	changeBy := data.ChangeBy
+	comment := data.Comment
+	val, err := strconv.ParseFloat(data.Val, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Val"})
 		return
 	}
-
-	paramID, err := strconv.ParseInt(c.PostForm("AddNewParamID"), 10, 64)
+	paramID, err := strconv.ParseInt(data.ParamID, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Param ID"})
 		return
 	}
-	xmlcr, err := strconv.ParseBool(c.PostForm("AddNewXml"))
+	xmlcr, err := strconv.ParseBool(data.XMLCreate)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid boolean format"})
 		return
 	}
-
-	manual, err := strconv.ParseBool(c.PostForm("AddNewManual"))
+	manual, err := strconv.ParseBool(data.Manual)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid boolean format"})
 		return
@@ -365,11 +414,7 @@ func (a *api) AddNewRecord(c *gin.Context) {
 		return
 	}
 
-	list, err := a.srv.GetHourParamList(ctx, filter.HourParam{Limit: 50})
-	if err != nil {
-		log.Err(err).Msg("GetHourParamList")
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-	c.HTML(http.StatusOK, "index.html", gin.H{"list": list})
+	c.JSON(http.StatusOK, gin.H{"message": "Данные успешно добавлены в базу данных"})
 }
+
+// Конец

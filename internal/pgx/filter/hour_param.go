@@ -14,4 +14,5 @@ type HourParam struct {
 	ChangeBy  string    `json:"ChangeBy"`
 	Comment   string    `json:"Comment"`
 	Limit     int64     `json:"Limit"`
+	Offset    int64     `json:"Offset"`
 }

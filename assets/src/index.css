@@ -4,3 +4,19 @@
 body {font-family: Arial, Helvetica, sans-serif;}
 * {box-sizing: border-box;}
 
+.top {
+  background-image: url(/assets/src/Img/top.png);
+  background-size: contain;
+  color: rgb(245,245,245);
+  font-size: 15px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 20px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  display: none;
+}

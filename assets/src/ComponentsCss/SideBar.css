@@ -14,6 +14,8 @@
   font-family: 'Lucida Console', Monaco, monospace;
   font-size: smaller;
 }
+
+
 /* SearchID */
 .SearchId {
   background-image: url(/assets/src/Img/search.png);
@@ -140,12 +142,6 @@
   top: 203px;
   left: 35px;
 }
-.InputLimit {
-  position: fixed;
-  top: 250px;
-  left: 5px;
-  width: 120px;
-}
 
 .errImg {
   background-size: contain;
@@ -202,7 +198,18 @@
 }
 
 .form-container .cancel {
-  background-color: #448AFF;
+  background-image: url(/assets/src/Img/close.png);
+  background-size: contain;
+  font-size: 15px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  width: 30px;
+  height: 30px;
+  position: fixed;
+  top: 10px;
+  left: 410px;
 }
 
 .form-container .btn:hover, .open-button:hover {
