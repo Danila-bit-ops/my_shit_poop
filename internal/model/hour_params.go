@@ -31,3 +31,22 @@ type HourParam struct {
 	XMLCreate bool      `json:"XMLCreate"`
 	Manual    bool      `json:"Manual"`
 }
+
+type Column struct {
+	Name     string `toml:"name"`
+	DataType string `toml:"data_type"`
+}
+
+type Table struct {
+	TableName string   `toml:"TableName"`
+	Columns   []Column `toml:"Columns"`
+}
+
+type TableConfig struct {
+	IP       string
+	DBName   string
+	Login    string
+	Password string
+	Sslmode  string
+	Tables   []Table `toml:"tables"`
+}

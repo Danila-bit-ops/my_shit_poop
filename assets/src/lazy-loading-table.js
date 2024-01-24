@@ -57,7 +57,6 @@ function sendGETLazyRequest(url, offset, filter, param1, param2) {
   } else {
     q = 'http://localhost:8080/api/' + url + '?RngStart=' + encodeURIComponent(param1) + '&RngEnd=' + encodeURIComponent(param2) + '&Offset=' + encodeURIComponent(offset)
   }
-  // q = 'http://localhost:8080/api/' + url + '?Offset='+ encodeURIComponent(offset)
   fetch(q)
     .then(response => response.json())
     .then(data => {
@@ -65,7 +64,6 @@ function sendGETLazyRequest(url, offset, filter, param1, param2) {
       appendRowsToTableLazy(data)
       if (data.list.length != 0) {
         console.log(data);
-        
       } else {
           // Вызов SweetAlert с уведомлением
           Swal.fire({

@@ -1,4 +1,10 @@
 const requestURL = "http://localhost:8080/api/table-hour-params" ;
+
+function testTest() {
+  q="http://localhost:8080/api/test";
+  fetch(q);
+}
+
 //Отправить запрос
 function sendRequest(method, url, body = null) {
   const headers = {
@@ -90,9 +96,11 @@ function deletePOSTRequest(param) {
       console.error('Ошибка:', result.error);
     } else if (result.message === "Данные успешно удалены из базы данных") {
       Swal.fire({
-        title: "Успешно!",
-        text: "Данные успешно удалены из базы данных!",
-        icon: "success"
+        position: "top-end",
+        icon: "success",
+        title: "Данные успешно удалены из базы данных",
+        showConfirmButton: false,
+        timer: 1500
       });
     } else {
       Swal.fire({
@@ -141,9 +149,11 @@ function addNewRecord(value,paramid,timest,xml,manual,ch,comm) {
       console.error('Ошибка:', result.error);
     } else {
       Swal.fire({
-        title: "Успешно!",
-        text: "Данные успешно добавлены в базу данных!",
-        icon: "success"
+        position: "top-end",
+        icon: "success",
+        title: "Данные успешно добавлены в базу данных",
+        showConfirmButton: false,
+        timer: 1500
       });
     }
   })
@@ -188,9 +198,11 @@ function updRecord(id,value,paramid,timest,xml,manual,ch,comm) {
       console.error('Ошибка:', result.error);
     } else if (result.message === "Данные успешно изменены") {
       Swal.fire({
-        title: "Успешно!",
-        text: "Данные успешно изменены!",
-        icon: "success"
+        position: "top-end",
+        icon: "success",
+        title: "Данные успешно изменены",
+        showConfirmButton: false,
+        timer: 1500
       });
     } else {
       Swal.fire({
@@ -276,8 +288,9 @@ function validateInputVal(id, buttonId) {
 }
 //Конец
 
+//скролл в начало таблицы
 function scrollToTop() {
   const tableContainer = document.querySelector('.table-container');
   tableContainer.scrollTop = 0;
 }
-
+//Конец

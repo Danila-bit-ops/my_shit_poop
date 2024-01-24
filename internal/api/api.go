@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"danilamukhin/serv_go/internal/model"
+	"danilamukhin/serv_go/internal/pgx"
 	"danilamukhin/serv_go/internal/pgx/filter"
 	"danilamukhin/serv_go/internal/service"
 
@@ -69,8 +70,49 @@ func (a *api) initHandlers(r *gin.Engine) {
 		api.GET("/get-range", a.FindRecordByRange)
 		api.GET("/table-hour-params", a.TableHourParam)
 		api.GET("/lazy-loading", a.LazyLoading)
+		api.GET("/test", a.CreateArchiveTable)
 	}
 }
+
+// Создание схемы Archive и таблицы
+func (a *api) CreateArchiveTable(c *gin.Context) {
+	var tableName string
+	ctx := c.Request.Context()
+	conf, err := pgx.ConfigData("/Users/danilamukhin/Desktop/Работа/serv_go/cmd/config.toml")
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, table := range conf.Tables {
+		tableName = table.TableName
+	}
+	year, quarter := a.MinimalTimestamp(c)
+	err = a.srv.CreateSchemaAndTable(ctx, conf, year, quarter)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = a.srv.MoveQuarter(ctx, tableName, year, quarter)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func (a *api) MinimalTimestamp(c *gin.Context) (year string, quarter string) {
+	ctx := c.Request.Context()
+	conf, err := pgx.ConfigData("/Users/danilamukhin/Desktop/Работа/serv_go/cmd/config.toml")
+	if err != nil {
+		fmt.Println(err)
+	}
+	minTime, err := a.srv.MinTimestamp(ctx, conf)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// fmt.Println(minTime)
+	year = strconv.Itoa(minTime.Year())
+	quarter = strconv.Itoa((int(minTime.Month())-1)/3 + 1)
+	return year, quarter
+}
+
+//
 
 // Lazy-Loading
 func (a *api) LazyLoading(c *gin.Context) {
