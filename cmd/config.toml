@@ -7,27 +7,7 @@ Sslmode = "disable"
 
 [[tables]]
   TableName = "hour_params"
-  [[tables.Columns]]
-    name = "id"
-    data_type = "bigserial"
-  [[tables.Columns]]
-    name = "val"
-    data_type = "numeric(10, 3) default 0 not null"
-  [[tables.Columns]]
-    name = "timestamp"
-    data_type = "timestamp default now() not null"
-  [[tables.Columns]]
-    name = "param_id"
-    data_type = "integer default 0 not null"
-  [[tables.Columns]]
-    name = "xml_create"
-    data_type = "boolean default false not null"
-  [[tables.Columns]]
-    name = "manual"
-    data_type = "boolean default false not null"
-  [[tables.Columns]]
-    name = "change_by"
-    data_type = "varchar default ''::character varying not null"
-  [[tables.Columns]]
-    name = "comment"
-    data_type = "text default ''::text not null"
+[[tables]]
+  TableName = "hour_params_test1"
+[[tables]]
+  TableName = "min_params"
